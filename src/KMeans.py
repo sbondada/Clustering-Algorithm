@@ -6,7 +6,7 @@ K Means implementation in python for gene data set
 @contact:    navinder@buffalo.edu
 
 @author2:     Kaushal
-@contact:    kbondada@buffalo.edu
+@contact:    sbondada@buffalo.edu
 '''
 
 import random
@@ -14,6 +14,7 @@ import re
 import copy
 import math
 import sys
+from DBSCAN_Clustering import calculateCorelation,calculateJaccardandRand,distance,gen_simlarity_mat
 
 TotalClusters = 0
 TotalGenes=0
@@ -86,6 +87,8 @@ def intializeCentroid(totalClusters):
     for i in range(TotalClusters):
         rand = random.randint(1, TotalGenes)
         geneObj=genes[rand]
+#         fixed_centroids=[3,53,175,261,419,344,208,183,199,422]
+#         geneObj=genes[fixed_centroids[i]-1]
         lis=copy.deepcopy(geneObj.getList())
         centroidObj=centroid(i,lis)
         centroids.append(centroidObj)
@@ -161,13 +164,61 @@ def utilKMeans():
     for cen in centroids:
         print "Centroid number:",cen.centroidNumber,"Elements",cen.totalGenes
     
+def get_clusterno_list():
+    global cluster_no_list
+    global genes
+    global cluster_map
+    for gen in genes:
+        cluster_no_list[int(gen.geneNumber)-1]=cluster_map[gen.centroidNumber]
+
+def get_cluster_mapping():
+    global cluster_map
+    gene_set,inc=set(),0
+    for gen in genes:
+        gene_set.add(gen.centroidNumber)
+    cluster_map={}
+    for i in gene_set:
+        inc=inc+1
+        cluster_map[i]=inc
+        
+        
+def loadinput(filename):
+    f = open(filename)
+    for line in f:
+        temptrans=line.split("\t")
+        temp_values=[]
+        for i in range(len(temptrans)):
+            if i<2:
+                temp_values.append(int(temptrans[i]))
+            else:
+                temp_values.append(float(temptrans[i]))
+        global item_list
+        item_list.append(temp_values)
+    print item_list   
+    
 if __name__ == '__main__':
 # two values to change as of now hardcoded
 # 1.Name of file to read
 # 2. Number of clusters needed    
 #    readInputFile('/home/sean/workspace/first/src/project2/iyer.txt')
 # here 5 is the k    
-    readInputFile('cho.txt')
-    intializeCentroid(5)
+    global item_list,cluster_no_list,cluster_map
+    readInputFile("/home/kaushal/Ubuntu One/subjects/semester_3/DATA_MINING/project2/iyer.txt")
+    item_list=[]
+    #specifiacally for the calculation of the jaccard and correlation values
+    loadinput("/home/kaushal/Ubuntu One/subjects/semester_3/DATA_MINING/project2/iyer.txt")
+    print item_list
+    intializeCentroid(10)
     utilKMeans()
     print "Execution Finished"
+    cluster_no_list=[0]*len(item_list)
+    get_cluster_mapping()
+    get_clusterno_list()
+    print cluster_map.values()
+    print cluster_no_list
+    external_ind=calculateJaccardandRand(item_list, cluster_no_list)
+    print external_ind
+    sim_mat=gen_simlarity_mat(item_list,'euclidean')
+    internal_ind=calculateCorelation(sim_mat,cluster_no_list)
+    print internal_ind
+    

@@ -1,8 +1,18 @@
+'''
+Submitted for project requirement in CSE 601
+Hierarchical clustering implementation in python for gene data set
+  
+@author1:     navinder
+@contact:    navinder@buffalo.edu
+
+@author2:     Kaushal
+@contact:    sbondada@buffalo.edu
+'''
 import math
 import numpy as np
 import sys
-
-item_list=[]
+from DBSCAN_Clustering import calculateJaccardandRand
+from DBSCAN_Clustering import calculateCorelation
 
 def loadinput(filename):
     f = open(filename)
@@ -14,7 +24,10 @@ def loadinput(filename):
                 temp_values.append(int(temptrans[i]))
             else:
                 temp_values.append(float(temptrans[i]))
+        global item_list
+        global item_list_org
         item_list.append([temp_values])
+        item_list_org.append(temp_values)
     print item_list
 
 def distance(x,y,dtype):
@@ -63,8 +76,7 @@ def gen_similarity_mat1(sim_mat,item_list,sim_type,merge_cond,merge_r,merge_c):
             sim_mat[minpos,i]=min_dist
 #returning the sim matrix because the passed reference to the sim matrix is lost when the compress has reassigned the values to the variable again
     return sim_mat 
-
-                
+            
 #get the positions of the 
 def get_next_merges(curr_sim_mat,merge_cond):
     if(merge_cond=='min'):
@@ -77,10 +89,22 @@ def get_next_merges(curr_sim_mat,merge_cond):
                     posr=i
                     posc=j
         print str(posr)+("-"*10)+str(posc)
-        return [min_sim,posr,posc]       
+        return [min_sim,posr,posc]      
+    
+def get_clusterno_list():
+    global cluster_no_list
+    cluster=0
+    for clusters in item_list:
+        cluster=cluster+1
+        for lists in clusters:
+            cluster_no_list[lists[0]-1]=cluster           
+                
                  
 if __name__=="__main__":
+    global item_list,item_list_org,cluster_no_list
+    item_list,item_list_org=[],[]
     loadinput("/home/kaushal/Ubuntu One/subjects/semester_3/DATA_MINING/project2/cho.txt")
+    cluster_no_list=[0]*(len(item_list))
     ref_distance_mat=gen_simlarity_mat(item_list,sys.argv[4],sys.argv[5])
     curr_sim_mat=np.matrix(ref_distance_mat)
     k=int(sys.argv[3])
@@ -95,7 +119,14 @@ if __name__=="__main__":
             temp1=item_list.pop(mergeinfo[1])
             temp2=item_list.pop(mergeinfo[2])
             item_list.insert(minpos,temp2+temp1)
-        #curr_sim_mat=gen_similarity_mat1(curr_sim_mat,item_list, sys.argv[4],sys.argv[5],mergeinfo[1],mergeinfo[2])
-        curr_sim_mat=gen_simlarity_mat(item_list,sys.argv[4],sys.argv[5])
+        curr_sim_mat=gen_similarity_mat1(curr_sim_mat,item_list, sys.argv[4],sys.argv[5],mergeinfo[1],mergeinfo[2])
+        #curr_sim_mat=gen_simlarity_mat(item_list,sys.argv[4],sys.argv[5])
+    get_clusterno_list()
+    print set(cluster_no_list)
+    print cluster_no_list
+    external_ind=calculateJaccardandRand(item_list_org, cluster_no_list)
+    print external_ind
+    internal_ind=calculateCorelation(ref_distance_mat,cluster_no_list)
+    print internal_ind
     
         
