@@ -49,23 +49,21 @@ def DBSCAN(item_list,e,min_points):
                 global cluster_no
                 cluster_no=cluster_no+1
                 print cluster_no
-                cluster_no_list[i]=cluster_no
-                expand_Cluster(neighbour_pos_set,cluster_no,e,min_points)
+                expand_Cluster(i,neighbour_pos_set,cluster_no,e,min_points)
 
-def expand_Cluster(neighbor_pos_list,cluster_no,e,min_points):
-    pending_neighbour_pos_list=[]
+def expand_Cluster(i,neighbor_pos_list,cluster_no,e,min_points):
+    cluster_no_list[i]=cluster_no
+    pending_neighbour_pos_list=list()
     for j in neighbor_pos_list:
         if visitor_list[j]==-1:
             visitor_list[j]=1
             new_neighbour_pos_list=find_neighboring_points(j,sim_mat,e)
             if(len(new_neighbour_pos_list)>=min_points):
-                pending_neighbour_pos_list=pending_neighbour_pos_list+new_neighbour_pos_list
+                pending_neighbour_pos_list.extend(new_neighbour_pos_list)
                 pending_neighbour_pos_list=sorted(set(pending_neighbour_pos_list))
                 print pending_neighbour_pos_list
         if cluster_no_list[j]==-1:
             cluster_no_list[j]=cluster_no
-    if len(pending_neighbour_pos_list)>0:
-        expand_Cluster(list(pending_neighbour_pos_list), cluster_no, e, min_points)
             
     
 if __name__=="__main__":
@@ -80,3 +78,4 @@ if __name__=="__main__":
     cluster_no=0
     DBSCAN(item_list, e, min_points)
     print set(cluster_no_list)
+    print cluster_no_list
