@@ -15,6 +15,7 @@ import copy
 import math
 import sys
 from DBSCAN_Clustering import calculateCorelation,calculateJaccardandRand,distance,gen_simlarity_mat
+from DBSCAN_Clustering import pca,get_TopN_values
 
 TotalClusters = 0
 TotalGenes=0
@@ -221,4 +222,6 @@ if __name__ == '__main__':
     sim_mat=gen_simlarity_mat(item_list,'euclidean')
     internal_ind=calculateCorelation(sim_mat,cluster_no_list)
     print internal_ind
+    pca(item_list,3)
+    
     

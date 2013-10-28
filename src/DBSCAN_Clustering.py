@@ -11,6 +11,8 @@ DBSCAN implementation in python for gene data set
 import math
 import sys
 import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
 
 def loadinput(filename):
     f = open(filename)
@@ -118,13 +120,50 @@ def calculateCorelation(sim_mat,cluster_no_list):
             denom2=denom2+math.pow(clustering[i,j]-cluster_mean, 2)
     correlation=float(numer)/(math.sqrt(denom1)*math.sqrt(denom2))
     return correlation
+
+def get_TopN_values(inp_array,n):
+    n_val_dict={}
+    inc,max_val,pos=0,0,-1
+    while(inc<n):
+        for i in range(len(inp_array)):
+            if(inp_array[i]>max_val):
+                max_val=inp_array[i]
+                pos=i
+        inp_array[pos]=0
+        n_val_dict[max_val]=pos
+        max_val=0
+        inc=inc+1
+    return n_val_dict
+    
+    
+def pca(item_list,nd):
+    #removing the starting elements in the matrix so that the eigen values can be calculated only to the features
+    org_data=np.compress([0]*2+[1]*(len(item_list[1])-2),np.matrix(item_list),axis=1)
+    #print org_data.shape
+    #calculating the mean of the matrix for each column so that the points are shifted to center
+    org_mean=np.mean(org_data,axis=0)
+    #subtracting the columns mean with each value in the matrix so that we shift the values
+    adj_data=org_data-org_mean
+    #calculating the co-variance among the 16 features of the each 300 or 500 samples
+    cov_data=np.cov(np.transpose(adj_data))
+    #calculating the eigen values for the square matrix
+    eig_val,eig_vec=np.linalg.eig(cov_data)
+    topN_Dict=get_TopN_values(list(eig_val),nd)
+    condition=[0]*len(eig_val)
+    for i in topN_Dict.values():
+        condition[i]=1
+    red_eig_vec=np.compress(condition,eig_vec,axis=1)
+    #red_eig_vec=np.transpose(red_eig_vec)
+    red_data=org_data*red_eig_vec
+    return red_data
+    
     
 if __name__=="__main__":
     e=float(sys.argv[3])
     min_points=int(sys.argv[4])
     global cluster_no_list,visitor_list,item_list,cluster_no,sim_mat #visitor_list==-1 means the item_list point is unvisited by the algorithm
     item_list=[]
-    loadinput("/home/kaushal/Ubuntu One/subjects/semester_3/DATA_MINING/project2/cho.txt")#suppose to replace thetest to the command line argument sys.argv[2] 
+    loadinput("/home/kaushal/Ubuntu One/subjects/semester_3/DATA_MINING/project2/iyer.txt")#suppose to replace the test to the command line argument sys.argv[2] 
     cluster_no_list=[-1]*len(item_list)
     visitor_list=[-1]*len(item_list)
     sim_mat=gen_simlarity_mat(item_list, 'euclidean')
@@ -136,3 +175,15 @@ if __name__=="__main__":
     print external_ind
     internal_ind=calculateCorelation(sim_mat, cluster_no_list)
     print internal_ind
+    red_item_list=pca(item_list,3)
+    
+    colorset=['r','b','g','c','m','y','k','w',(0.6,0.2,0.1),(0.1,0.3,0.6),(0.2,0.6,0.6),(0.15,0.4,0.7)]
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    for i in range(len(red_item_list[:,1])):
+        ax.scatter(red_item_list[i,0],red_item_list[i,1],red_item_list[i,2],c=colorset[cluster_no_list[i]])
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+
+    plt.show()

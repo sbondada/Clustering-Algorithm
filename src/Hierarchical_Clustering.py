@@ -13,6 +13,7 @@ import numpy as np
 import sys
 from DBSCAN_Clustering import calculateJaccardandRand
 from DBSCAN_Clustering import calculateCorelation
+from DBSCAN_Clustering import pca,get_TopN_values
 
 def loadinput(filename):
     f = open(filename)
@@ -128,5 +129,6 @@ if __name__=="__main__":
     print external_ind
     internal_ind=calculateCorelation(ref_distance_mat,cluster_no_list)
     print internal_ind
+    pca(item_list_org,2)
     
         
