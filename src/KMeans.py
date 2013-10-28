@@ -16,6 +16,9 @@ import math
 import sys
 from DBSCAN_Clustering import calculateCorelation,calculateJaccardandRand,distance,gen_simlarity_mat
 from DBSCAN_Clustering import pca,get_TopN_values
+import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
 
 TotalClusters = 0
 TotalGenes=0
@@ -222,6 +225,17 @@ if __name__ == '__main__':
     sim_mat=gen_simlarity_mat(item_list,'euclidean')
     internal_ind=calculateCorelation(sim_mat,cluster_no_list)
     print internal_ind
-    pca(item_list,3)
+    red_item_list=pca(item_list,3)
+    
+    colorset=['r','b','g','c','m','y','k','w',(0.6,0.2,0.1),(0.1,0.3,0.6),(0.2,0.6,0.6),(0.15,0.4,0.7)]
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    for i in range(len(red_item_list[:,1])):
+        ax.scatter(red_item_list[i,0],red_item_list[i,1],red_item_list[i,2],c=colorset[cluster_no_list[i]])
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+
+    plt.show()
     
     

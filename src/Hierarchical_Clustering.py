@@ -14,6 +14,8 @@ import sys
 from DBSCAN_Clustering import calculateJaccardandRand
 from DBSCAN_Clustering import calculateCorelation
 from DBSCAN_Clustering import pca,get_TopN_values
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
 
 def loadinput(filename):
     f = open(filename)
@@ -104,7 +106,7 @@ def get_clusterno_list():
 if __name__=="__main__":
     global item_list,item_list_org,cluster_no_list
     item_list,item_list_org=[],[]
-    loadinput("/home/kaushal/Ubuntu One/subjects/semester_3/DATA_MINING/project2/cho.txt")
+    loadinput("/home/kaushal/Ubuntu One/subjects/semester_3/DATA_MINING/project2/iyer.txt")
     cluster_no_list=[0]*(len(item_list))
     ref_distance_mat=gen_simlarity_mat(item_list,sys.argv[4],sys.argv[5])
     curr_sim_mat=np.matrix(ref_distance_mat)
@@ -129,6 +131,17 @@ if __name__=="__main__":
     print external_ind
     internal_ind=calculateCorelation(ref_distance_mat,cluster_no_list)
     print internal_ind
-    pca(item_list_org,2)
+    red_item_list=pca(item_list_org,3)
+    
+    colorset=['r','b','g','c','m','y','k','w',(0.6,0.2,0.1),(0.1,0.3,0.6),(0.2,0.6,0.6),(0.15,0.4,0.7)]
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    for i in range(len(red_item_list[:,1])):
+        ax.scatter(red_item_list[i,0],red_item_list[i,1],red_item_list[i,2],c=colorset[cluster_no_list[i]])
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+
+    plt.show()
     
         
