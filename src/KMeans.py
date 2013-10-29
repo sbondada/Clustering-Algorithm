@@ -89,10 +89,11 @@ def intializeCentroid(totalClusters):
         sys.exit()
     TotalClusters = totalClusters
     for i in range(TotalClusters):
-        rand = random.randint(1, TotalGenes)
-        geneObj=genes[rand]
+#         rand = random.randint(1, TotalGenes)
+#         geneObj=genes[rand]
 #         fixed_centroids=[3,53,175,261,419,344,208,183,199,422]
-#         geneObj=genes[fixed_centroids[i]-1]
+        fixed_centroids=[1,10,11]
+        geneObj=genes[fixed_centroids[i]-1]
         lis=copy.deepcopy(geneObj.getList())
         centroidObj=centroid(i,lis)
         centroids.append(centroidObj)
@@ -207,12 +208,12 @@ if __name__ == '__main__':
 #    readInputFile('/home/sean/workspace/first/src/project2/iyer.txt')
 # here 5 is the k    
     global item_list,cluster_no_list,cluster_map
-    readInputFile("/home/kaushal/Ubuntu One/subjects/semester_3/DATA_MINING/project2/iyer.txt")
+    readInputFile("../dataset/dataset1.txt")
     item_list=[]
     #specifiacally for the calculation of the jaccard and correlation values
-    loadinput("/home/kaushal/Ubuntu One/subjects/semester_3/DATA_MINING/project2/iyer.txt")
+    loadinput("../dataset/dataset1.txt")
     print item_list
-    intializeCentroid(10)
+    intializeCentroid(3)
     utilKMeans()
     print "Execution Finished"
     cluster_no_list=[0]*len(item_list)

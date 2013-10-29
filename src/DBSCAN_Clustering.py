@@ -163,7 +163,7 @@ if __name__=="__main__":
     min_points=int(sys.argv[4])
     global cluster_no_list,visitor_list,item_list,cluster_no,sim_mat #visitor_list==-1 means the item_list point is unvisited by the algorithm
     item_list=[]
-    loadinput("/home/kaushal/Ubuntu One/subjects/semester_3/DATA_MINING/project2/cho.txt")#suppose to replace the test to the command line argument sys.argv[2] 
+    loadinput("../dataset/dataset1.txt")#suppose to replace the test to the command line argument sys.argv[2] 
     cluster_no_list=[-1]*len(item_list)
     visitor_list=[-1]*len(item_list)
     sim_mat=gen_simlarity_mat(item_list, 'euclidean')

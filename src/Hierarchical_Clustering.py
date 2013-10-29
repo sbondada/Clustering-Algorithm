@@ -106,11 +106,11 @@ def get_clusterno_list():
 if __name__=="__main__":
     global item_list,item_list_org,cluster_no_list
     item_list,item_list_org=[],[]
-    loadinput("/home/kaushal/Ubuntu One/subjects/semester_3/DATA_MINING/project2/iyer.txt")
+    loadinput("../dataset/dataset2.txt")
     cluster_no_list=[0]*(len(item_list))
-    ref_distance_mat=gen_simlarity_mat(item_list,sys.argv[4],sys.argv[5])
+    ref_distance_mat=gen_simlarity_mat(item_list,sys.argv[4],sys.argv[5])#the parameter values are as follow ---euclidean min
     curr_sim_mat=np.matrix(ref_distance_mat)
-    k=int(sys.argv[3])
+    k=int(sys.argv[3]) #parameter for the no of clusters
     while(len(item_list)!=k):
         mergeinfo=get_next_merges(curr_sim_mat,sys.argv[5])
         minpos=min(mergeinfo[1],mergeinfo[2])
