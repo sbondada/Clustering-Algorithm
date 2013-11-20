@@ -31,12 +31,22 @@ def construct_inp_mat(filename,case):
             input_matrix[itemdict[tempfrststr],itemdict[tempscndstr]]+=1
             input_matrix[itemdict[tempscndstr],itemdict[tempfrststr]]+=1
 
-def write_mat_file(temp_mat,filename):
-    write_file=open("/home/kaushal/Downloads/Data_For_HW3/"+filename,"w")
-    for i in np.asarray(temp_mat):
-        write_file.write(str(i))
-        write_file.write(str("\n")) 
-        
+def write_mat_file(TOTnodes,filename):
+    Clusterlist=[-1]*TOTnodes
+    Clusterno=-1
+    for i in range(input_matrix.shape[0]):
+        if input_matrix[i].sum()!=0:
+            Clusterno+=1
+        for j in range(input_matrix.shape[1]):
+            if input_matrix[i,j]!=0:
+                Clusterlist[j]=Clusterno   
+    print Clusterlist        
+    write_file=open("/home/kaushal/Downloads/Data_For_HW3/"+filename+".clu","w")
+    write_file.write("*Vertices "+str(TOTnodes)+'\n')
+    for item in Clusterlist:
+        write_file.write(str(item)+'\n')
+    write_file.close()         
+    
 def find_max_nodes(filename,case):
     print "Dataset being used:",case
     maxnodes=0
@@ -119,19 +129,20 @@ def Mcl (e=2,r=2):
 
 if __name__== "__main__":
     global input_matrix,itemdict
-    #maxnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/attweb_net.txt",'attweb_net')
-    maxnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/physics_collaboration_net.txt",'physics_collaboration_net')
-    #maxnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/yeast_undirected_metabolic.txt",'yeast_undirected_metabolic')
-    print "Total no of Nodes:",maxnodes
-    input_matrix=np.matrix(np.zeros((maxnodes,maxnodes)))
+    #TOTnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/attweb_net.txt",'attweb_net')
+    #TOTnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/physics_collaboration_net.txt",'physics_collaboration_net')
+    TOTnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/yeast_undirected_metabolic.txt",'yeast_undirected_metabolic')
+    print "Total no of Nodes:",TOTnodes
+    input_matrix=np.matrix(np.zeros((TOTnodes,TOTnodes)))
     #construct_inp_mat("/home/kaushal/Downloads/Data_For_HW3/attweb_net.txt",'attweb_net')
-    construct_inp_mat("/home/kaushal/Downloads/Data_For_HW3/physics_collaboration_net.txt",'physics_collaboration_net')
-    #construct_inp_mat("/home/kaushal/Downloads/Data_For_HW3/yeast_undirected_metabolic.txt",'yeast_undirected_metabolic')
+    #construct_inp_mat("/home/kaushal/Downloads/Data_For_HW3/physics_collaboration_net.txt",'physics_collaboration_net')
+    construct_inp_mat("/home/kaushal/Downloads/Data_For_HW3/yeast_undirected_metabolic.txt",'yeast_undirected_metabolic')
 #     input_matrix=input_matrix.transpose()
 #     input_matrix=np.matrix([[1,2,3],[4,5,6],[7,8,9]])
 #     print input_matrix
 #     print np.alltrue(input_matrix==input_matrix.transpose())
     NoOfIterations,Clusters=Mcl(2, 2)
+    write_mat_file(TOTnodes,'yeast')
     
     
     

@@ -13,8 +13,7 @@ import numpy as np
 import sys
 from DBSCAN_Clustering import calculateJaccardandRand
 from DBSCAN_Clustering import calculateCorelation
-from DBSCAN_Clustering import pca,get_TopN_values
-from mpl_toolkits.mplot3d import Axes3D
+from DBSCAN_Clustering import pca
 import matplotlib.pyplot as plt
 
 def loadinput(filename):
