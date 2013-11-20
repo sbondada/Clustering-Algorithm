@@ -1,5 +1,14 @@
+'''
+Submitted for Homework3 requirement in CSE 601
+Markov Clustering Analysis for Complex Data in python for gene data set
+  
+@author1:     navinder
+@contact:    navinder@buffalo.edu
+
+@author2:     Kaushal
+@contact:    sbondada@buffalo.edu
+'''
 import numpy as np
-import math
 
 def construct_inp_mat(filename,case):
     global input_matrix
@@ -26,10 +35,10 @@ def write_mat_file(temp_mat,filename):
     write_file=open("/home/kaushal/Downloads/Data_For_HW3/"+filename,"w")
     for i in np.asarray(temp_mat):
         write_file.write(str(i))
-        write_file.write(str("\n"))
-        
+        write_file.write(str("\n")) 
         
 def find_max_nodes(filename,case):
+    print "Dataset being used:",case
     maxnodes=0
     if case=='attweb_net':
         inpfile=open(filename)
@@ -98,26 +107,22 @@ def Mcl (e=2,r=2):
         loop_inc=loop_inc+1
     
     print input_matrix
-    print loop_inc
+    print "No of Iterations:", loop_inc
     
     f=input_matrix.sum(axis=1)
     clusters=0
     for i in f:
         if i!=0:
             clusters+=1
-    print clusters
-    
-    write_mat_file(input_matrix,"input_matrix")
-    write_mat_file(cmp_matrix,"cmp_matrix")
-    write_mat_file(input_matrix.sum(axis=1),"input_sum")
-    
+    print "No of Clusters:", clusters
+    return (loop_inc,clusters)
 
 if __name__== "__main__":
     global input_matrix,itemdict
     #maxnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/attweb_net.txt",'attweb_net')
     maxnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/physics_collaboration_net.txt",'physics_collaboration_net')
     #maxnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/yeast_undirected_metabolic.txt",'yeast_undirected_metabolic')
-    print maxnodes
+    print "Total no of Nodes:",maxnodes
     input_matrix=np.matrix(np.zeros((maxnodes,maxnodes)))
     #construct_inp_mat("/home/kaushal/Downloads/Data_For_HW3/attweb_net.txt",'attweb_net')
     construct_inp_mat("/home/kaushal/Downloads/Data_For_HW3/physics_collaboration_net.txt",'physics_collaboration_net')
@@ -126,4 +131,9 @@ if __name__== "__main__":
 #     input_matrix=np.matrix([[1,2,3],[4,5,6],[7,8,9]])
 #     print input_matrix
 #     print np.alltrue(input_matrix==input_matrix.transpose())
-    Mcl(2, 2)
+    NoOfIterations,Clusters=Mcl(2, 2)
+    
+    
+    
+    
+    
