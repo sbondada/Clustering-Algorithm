@@ -1,13 +1,21 @@
 import numpy as np
 import math
 
-
-def construct_inp_mat(filename):
+def construct_inp_mat(filename,case):
     global input_matrix
     inpfile=open(filename)
-    for line in inpfile:
-        splitstr=line.split(" ")
-        input_matrix[int(splitstr[0]),int(splitstr[1])]=input_matrix[int(splitstr[0]),int(splitstr[1])]+1
+    if case=='attweb_net':
+        for line in inpfile:
+            splitstr=line.split(" ")
+            #print splitstr
+            input_matrix[int(splitstr[0]),int(splitstr[1])]+=1
+            input_matrix[int(splitstr[1]),int(splitstr[0])]+=1
+    elif case =='yeast_undirected_metabolic':
+        for line in inpfile:
+            splitstr=line.split("\t")
+            #print splitstr
+            input_matrix[int(splitstr[0]),int(splitstr[1])]+=1
+            input_matrix[int(splitstr[1]),int(splitstr[0])]+=1
 
 def write_mat_file(temp_mat,filename):
     write_file=open("/home/kaushal/Downloads/Data_For_HW3/"+filename,"w")
@@ -16,21 +24,30 @@ def write_mat_file(temp_mat,filename):
         write_file.write(str("\n"))
         
         
-def find_max_nodes(filename):
+def find_max_nodes(filename,case):
     maxnodes=0
-    inpfile=open(filename)
-    for line in inpfile:
-        splitstr=line.split(" ")
-        if(maxnodes<int(splitstr[0])):
-            maxnodes=int(splitstr[0])
-        if(maxnodes<int(splitstr[1])):
-            maxnodes=int(splitstr[1])
+    if case=='attweb_net':
+        inpfile=open(filename)
+        for line in inpfile:
+            splitstr=line.split(" ")
+            if(maxnodes<int(splitstr[0])):
+                maxnodes=int(splitstr[0])
+            if(maxnodes<int(splitstr[1])):
+                maxnodes=int(splitstr[1])
+    elif case =='yeast_undirected_metabolic':
+        inpfile=open(filename)
+        for line in inpfile:
+            splitstr=line.split("\t")
+            if(maxnodes<int(splitstr[0])):
+                maxnodes=int(splitstr[0])
+            if(maxnodes<int(splitstr[1])):
+                maxnodes=int(splitstr[1]) 
     return maxnodes+1
     
 def Mcl (e=2,r=2):
     global input_matrix
     #. Add self loops to each node to avoid divide by zero and not a number exceptions
-    input_matrix=input_matrix+np.eye(input_matrix.shape[0])
+    input_matrix=input_matrix+np.eye(input_matrix.shape[0],dtype='float16')
     #print input_matrix
     # finding the sum of each column for normalization
     norm_array=input_matrix.sum(axis=0)
@@ -45,7 +62,7 @@ def Mcl (e=2,r=2):
     
     loop_inc=0
     
-    while( not(np.allclose(input_matrix,cmp_matrix))):
+    while( not(np.all(input_matrix==cmp_matrix))):
         #Expand by taking the eth power of the matrix
         cmp_matrix=np.matrix(input_matrix)
         input_matrix=input_matrix**e
@@ -60,6 +77,15 @@ def Mcl (e=2,r=2):
         loop_inc=loop_inc+1
     
     print input_matrix
+    print loop_inc
+    
+    f=input_matrix.sum(axis=1)
+    clusters=0
+    for i in f:
+        if i!=0:
+            clusters+=1
+    print clusters
+    
     write_mat_file(input_matrix,"input_matrix")
     write_mat_file(cmp_matrix,"cmp_matrix")
     write_mat_file(input_matrix.sum(axis=1),"input_sum")
@@ -67,9 +93,14 @@ def Mcl (e=2,r=2):
 
 if __name__== "__main__":
     global input_matrix
-    maxnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/attweb_net.txt")
+    #maxnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/attweb_net.txt",'attweb_net')
+    maxnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/yeast_undirected_metabolic.txt",'yeast_undirected_metabolic')
     print maxnodes
     input_matrix=np.matrix(np.zeros((maxnodes,maxnodes)))
-    construct_inp_mat("/home/kaushal/Downloads/Data_For_HW3/attweb_net.txt") 
+    #construct_inp_mat("/home/kaushal/Downloads/Data_For_HW3/attweb_net.txt",'attweb_net')
+    construct_inp_mat("/home/kaushal/Downloads/Data_For_HW3/yeast_undirected_metabolic.txt",'yeast_undirected_metabolic')
+#     input_matrix=input_matrix.transpose()
 #     input_matrix=np.matrix([[1,2,3],[4,5,6],[7,8,9]])
+#     print input_matrix
+#     print np.alltrue(input_matrix==input_matrix.transpose())
     Mcl(2, 2)
