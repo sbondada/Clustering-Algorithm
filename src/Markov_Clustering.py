@@ -10,12 +10,17 @@ def construct_inp_mat(filename,case):
             #print splitstr
             input_matrix[int(splitstr[0]),int(splitstr[1])]+=1
             input_matrix[int(splitstr[1]),int(splitstr[0])]+=1
-    elif case =='yeast_undirected_metabolic':
+    elif case =='yeast_undirected_metabolic' or case =='physics_collaboration_net':
         for line in inpfile:
-            splitstr=line.split("\t")
+            if case =='yeast_undirected_metabolic' :
+                splitstr=line.split("\t")
+            elif case =='physics_collaboration_net':
+                splitstr=line.split(" ")
             #print splitstr
-            input_matrix[int(splitstr[0]),int(splitstr[1])]+=1
-            input_matrix[int(splitstr[1]),int(splitstr[0])]+=1
+            tempfrststr=str(splitstr[0].strip())
+            tempscndstr=str(splitstr[1].strip())
+            input_matrix[itemdict[tempfrststr],itemdict[tempscndstr]]+=1
+            input_matrix[itemdict[tempscndstr],itemdict[tempfrststr]]+=1
 
 def write_mat_file(temp_mat,filename):
     write_file=open("/home/kaushal/Downloads/Data_For_HW3/"+filename,"w")
@@ -34,15 +39,31 @@ def find_max_nodes(filename,case):
                 maxnodes=int(splitstr[0])
             if(maxnodes<int(splitstr[1])):
                 maxnodes=int(splitstr[1])
-    elif case =='yeast_undirected_metabolic':
+        return maxnodes+1
+    elif case =='yeast_undirected_metabolic' or case =='physics_collaboration_net' :
         inpfile=open(filename)
+        global itemdict
+        itemdict={}
+        inc=0
         for line in inpfile:
-            splitstr=line.split("\t")
-            if(maxnodes<int(splitstr[0])):
-                maxnodes=int(splitstr[0])
-            if(maxnodes<int(splitstr[1])):
-                maxnodes=int(splitstr[1]) 
-    return maxnodes+1
+            if case =='yeast_undirected_metabolic' :
+                splitstr=line.split("\t")
+            elif case =='physics_collaboration_net':
+                splitstr=line.split(" ")
+            #print splitstr
+            tempfrststr=str(splitstr[0].strip())
+            tempscndstr=str(splitstr[1].strip())
+            if(tempfrststr not in itemdict):
+                itemdict[tempfrststr]=inc
+                #print tempfrststr
+                inc+=1 
+            if(tempscndstr not in itemdict):
+                itemdict[tempscndstr]=inc
+                #print tempscndstr
+                inc+=1
+        maxnodes=len(set(itemdict.keys()))
+        #print sorted(itemdict.items(),key=lambda x : x[1])
+        return maxnodes
     
 def Mcl (e=2,r=2):
     global input_matrix
@@ -92,13 +113,15 @@ def Mcl (e=2,r=2):
     
 
 if __name__== "__main__":
-    global input_matrix
+    global input_matrix,itemdict
     #maxnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/attweb_net.txt",'attweb_net')
-    maxnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/yeast_undirected_metabolic.txt",'yeast_undirected_metabolic')
+    maxnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/physics_collaboration_net.txt",'physics_collaboration_net')
+    #maxnodes=find_max_nodes("/home/kaushal/Downloads/Data_For_HW3/yeast_undirected_metabolic.txt",'yeast_undirected_metabolic')
     print maxnodes
     input_matrix=np.matrix(np.zeros((maxnodes,maxnodes)))
     #construct_inp_mat("/home/kaushal/Downloads/Data_For_HW3/attweb_net.txt",'attweb_net')
-    construct_inp_mat("/home/kaushal/Downloads/Data_For_HW3/yeast_undirected_metabolic.txt",'yeast_undirected_metabolic')
+    construct_inp_mat("/home/kaushal/Downloads/Data_For_HW3/physics_collaboration_net.txt",'physics_collaboration_net')
+    #construct_inp_mat("/home/kaushal/Downloads/Data_For_HW3/yeast_undirected_metabolic.txt",'yeast_undirected_metabolic')
 #     input_matrix=input_matrix.transpose()
 #     input_matrix=np.matrix([[1,2,3],[4,5,6],[7,8,9]])
 #     print input_matrix
