@@ -13,23 +13,18 @@ import numpy as np
 def construct_inp_mat(filename,case):
     global input_matrix
     inpfile=open(filename)
-    if case=='attweb_net':
-        for line in inpfile:
+    for line in inpfile:
+        if case =='attweb_net':
             splitstr=line.split(" ")
-            #print splitstr
-            input_matrix[int(splitstr[0]),int(splitstr[1])]+=1
-            input_matrix[int(splitstr[1]),int(splitstr[0])]+=1
-    elif case =='yeast_undirected_metabolic' or case =='physics_collaboration_net':
-        for line in inpfile:
-            if case =='yeast_undirected_metabolic' :
-                splitstr=line.split("\t")
-            elif case =='physics_collaboration_net':
-                splitstr=line.split(" ")
-            #print splitstr
-            tempfrststr=str(splitstr[0].strip())
-            tempscndstr=str(splitstr[1].strip())
-            input_matrix[itemdict[tempfrststr],itemdict[tempscndstr]]+=1
-            input_matrix[itemdict[tempscndstr],itemdict[tempfrststr]]+=1
+        elif case =='yeast_undirected_metabolic' :
+            splitstr=line.split("\t")
+        elif case =='physics_collaboration_net':
+            splitstr=line.split(" ")
+        #print splitstr
+        tempfrststr=str(splitstr[0].strip())
+        tempscndstr=str(splitstr[1].strip())
+        input_matrix[itemdict[tempfrststr],itemdict[tempscndstr]]+=1
+        input_matrix[itemdict[tempscndstr],itemdict[tempfrststr]]+=1
 
 def write_mat_file(TOTnodes,filename):
     Clusterlist=[-1]*TOTnodes
@@ -49,40 +44,31 @@ def write_mat_file(TOTnodes,filename):
     
 def find_max_nodes(filename,case):
     print "Dataset being used:",case
-    maxnodes=0
-    if case=='attweb_net':
-        inpfile=open(filename)
-        for line in inpfile:
+    inpfile=open(filename)
+    global itemdict
+    itemdict={}
+    inc=0
+    for line in inpfile:
+        if case =='attweb_net':
             splitstr=line.split(" ")
-            if(maxnodes<int(splitstr[0])):
-                maxnodes=int(splitstr[0])
-            if(maxnodes<int(splitstr[1])):
-                maxnodes=int(splitstr[1])
-        return maxnodes+1
-    elif case =='yeast_undirected_metabolic' or case =='physics_collaboration_net' :
-        inpfile=open(filename)
-        global itemdict
-        itemdict={}
-        inc=0
-        for line in inpfile:
-            if case =='yeast_undirected_metabolic' :
-                splitstr=line.split("\t")
-            elif case =='physics_collaboration_net':
-                splitstr=line.split(" ")
-            #print splitstr
-            tempfrststr=str(splitstr[0].strip())
-            tempscndstr=str(splitstr[1].strip())
-            if(tempfrststr not in itemdict):
-                itemdict[tempfrststr]=inc
-                #print tempfrststr
-                inc+=1 
-            if(tempscndstr not in itemdict):
-                itemdict[tempscndstr]=inc
-                #print tempscndstr
-                inc+=1
-        maxnodes=len(set(itemdict.keys()))
-        #print sorted(itemdict.items(),key=lambda x : x[1])
-        return maxnodes
+        elif case =='yeast_undirected_metabolic' :
+            splitstr=line.split("\t")
+        elif case =='physics_collaboration_net':
+            splitstr=line.split(" ")
+        #print splitstr
+        tempfrststr=str(splitstr[0].strip())
+        tempscndstr=str(splitstr[1].strip())
+        if(tempfrststr not in itemdict):
+            itemdict[tempfrststr]=inc
+            #print tempfrststr
+            inc+=1 
+        if(tempscndstr not in itemdict):
+            itemdict[tempscndstr]=inc
+            #print tempscndstr
+            inc+=1
+    maxnodes=len(set(itemdict.keys()))
+    #print sorted(itemdict.items(),key=lambda x : x[1])
+    return maxnodes
     
 def Mcl (e=2,r=2):
     global input_matrix
